@@ -63,7 +63,7 @@ def llm_config(
                 model="gemini-2.5-flash",
                 temperature=temperature,
                 vertexai=True,
-                project="evaluation-deployment",
+                project=os.getenv("GCP_PROJECT_ID", "your-gcp-project-id"),
                 location="us-central1",
                 # other params...
             )
@@ -72,7 +72,7 @@ def llm_config(
                 model="gemini-2.5-pro",
                 temperature=temperature,
                 vertexai=True,
-                project="evaluation-deployment",
+                project=os.getenv("GCP_PROJECT_ID", "your-gcp-project-id"),
                 location="us-central1",
             )
         case 'gemini-2.0-flash-lite':
@@ -80,7 +80,7 @@ def llm_config(
                 model="gemini-2.0-flash-lite",
                 temperature=temperature,
                 vertexai=True,
-                project="evaluation-deployment",
+                project=os.getenv("GCP_PROJECT_ID", "your-gcp-project-id"),
                 location="us-central1",
             )
         case 'gemini-2.5-flash-lite':
@@ -88,7 +88,7 @@ def llm_config(
                 model="gemini-2.5-flash-lite-preview-06-17",
                 temperature=temperature,
                 vertexai=True,
-                project="evaluation-deployment",
+                project=os.getenv("GCP_PROJECT_ID", "your-gcp-project-id"),
                 location="us-central1",
             )
         case 'gpt-4o':

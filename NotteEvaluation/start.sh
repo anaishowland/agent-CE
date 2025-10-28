@@ -36,7 +36,7 @@ echo ""
 sudo docker run \
     -v "$CREDS_FILE:/root/.config/gcloud/application_default_credentials.json:ro" \
     -e GOOGLE_APPLICATION_CREDENTIALS=/root/.config/gcloud/application_default_credentials.json \
-    -e GOOGLE_CLOUD_PROJECT=evaluation-deployment \
+    -e GOOGLE_CLOUD_PROJECT=your-gcp-project-id \
     -it --rm \
     "$IMAGE_NAME" \
 

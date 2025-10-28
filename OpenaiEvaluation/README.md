@@ -26,7 +26,7 @@ We navigate and include the first screenshot in the initial request so the model
 ## Build
 ```bash
 # Build neurosim-base once from inside agent-hub-v0.1.2 (amd64)
-cd /Users/anaishowland/Documents/agent-hub-v0.1.2
+cd /path/to/agent-CE
 TOKEN=$(gcloud auth application-default print-access-token)
 docker buildx build --platform linux/amd64 --load \
   --build-arg GCLOUD_ACCESS_TOKEN="$TOKEN" \
@@ -35,7 +35,7 @@ docker buildx build --platform linux/amd64 --load \
   .
 
 # Build OpenAI agent from repo root (uses local neurosim-base)
-cd /Users/anaishowland/Documents/agent-hub
+cd /path/to/agent-CE
 docker build -t openai-eval:local-amd64 -f OpenaiEvaluation/Dockerfile .
 # Optional: verify image arch
 docker inspect openai-eval:local-amd64 --format '{{.Os}}/{{.Architecture}}'
@@ -45,20 +45,20 @@ docker inspect openai-eval:local-amd64 --format '{{.Os}}/{{.Architecture}}'
 
 ## Run locally (headful)
 ```bash
-CREDS_FILE="/Users/anaishowland/Documents/agent-hub/application_default_credentials.json"
+CREDS_FILE="/path/to/your/application_default_credentials.json"
 docker run --pull=never -it --rm \
-  --env-file /Users/anaishowland/Documents/agent-hub/.env \
+  --env-file /path/to/agent-CE/.env \
   -e LOG_LEVEL=DEBUG \
-  -e BUCKET_NAME=paradigm-shift-job-results \
-  -e GOOGLE_CLOUD_PROJECT=evaluation-deployment \
+  -e BUCKET_NAME=your-gcs-bucket-name \
+  -e GOOGLE_CLOUD_PROJECT=your-gcp-project-id \
   -e GOOGLE_APPLICATION_CREDENTIALS=/root/.config/gcloud/application_default_credentials.json \
   -v "$CREDS_FILE:/root/.config/gcloud/application_default_credentials.json:ro" \
-  -v "/Users/anaishowland/Documents/agent-hub:/app" -w /app \
+  -v "/path/to/agent-CE:/app" -w /app \
   openai-eval:local-amd64 \
   --jobId "openai/local" \
   --task "Check the current stock price for Apple (AAPL) on a financial news website." \
   --taskId "finance-test2" \
-  --user "anais" \
+  --user "your-user-id" \
   --episode 0 \
   --model "computer-use-preview" \
   --advanced_settings '{"max_steps":25,"temperature":0}'
@@ -99,7 +99,7 @@ xvfb-run -a python -m OpenaiEvaluation.main \
   --jobId "openai/local" \
   --task "..." \
   --taskId "example" \
-  --user "anais" \
+  --user "your-user-id" \
   --episode 0 \
   --model "computer-use-preview" \
   --advanced_settings "{\"display_width_px\": $VW, \"display_height_px\": $VH, \"max_steps\": 30, \"temperature\": 0}"
@@ -109,9 +109,9 @@ Docker (via `docker run` with env substitution):
 ```bash
 VW=1366 VH=768 \
 docker run --rm \
-  -e TASK_ID=mytask -e JOB_ID=openai -e USER_ID=anais -e EPISODE=0 \
+  -e TASK_ID=mytask -e JOB_ID=openai -e USER_ID=your-user-id -e EPISODE=0 \
   -e TASK_DESCRIPTION="$(printf %s '...' | base64 | tr -d '\n')" \
-  -v "/Users/anaishowland/Documents/agent-hub:/app" -w /app \
+  -v "/path/to/agent-CE:/app" -w /app \
   openai-eval:local-amd64 \
   /bin/bash -lc "set -e; export TASK_DESCRIPTION_DECODED=\"$(echo \"$TASK_DESCRIPTION\" | base64 --decode)\"; \
   xvfb-run -a python -m OpenaiEvaluation.main \
@@ -166,7 +166,7 @@ Notes:
 ## Rebuild and run this agent
 - Rebuild only the OpenAI agent image (neurosim‑base already built):
 ```bash
-cd /Users/anaishowland/Documents/agent-hub
+cd /path/to/agent-CE
 docker build -t openai-eval:local-amd64 -f OpenaiEvaluation/Dockerfile .
 ```
 - Run locally (headful): see the “Run locally (headful)” section above.

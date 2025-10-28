@@ -3,7 +3,7 @@ FROM neurosim-base
 
 ENV PYTHONUNBUFFERED=1
 ENV NOTTE_CONFIG_PATH=/app/NotteEvaluation/notte_config.toml
-ENV GOOGLE_CLOUD_PROJECT=evaluation-deployment
+ENV GOOGLE_CLOUD_PROJECT=YOUR_GCP_PROJECT_ID
 
 RUN uv pip install --system notte
 RUN python -m patchright install chrome

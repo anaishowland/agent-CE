@@ -18,7 +18,7 @@ Runs Claude's Computer Use agent headful under Playwright/Chrome and normalizes 
 ## Build
 ```bash
 # Build neurosim-base once (amd64)
-cd /Users/anaishowland/Documents/agent-hub-v0.1.2
+cd /path/to/agent-CE
 TOKEN=$(gcloud auth application-default print-access-token)
 docker buildx build --platform linux/amd64 --load \
   --build-arg GCLOUD_ACCESS_TOKEN="$TOKEN" \
@@ -26,7 +26,7 @@ docker buildx build --platform linux/amd64 --load \
   -f Dockerfile.base .
 
 # Build Anthropic agent from repo root (uses local neurosim-base)
-cd /Users/anaishowland/Documents/agent-hub
+cd /path/to/agent-CE
 docker build -t anthropic-eval:local-amd64 -f AnthropicEvaluation/Dockerfile .
 ```
 
@@ -34,17 +34,17 @@ docker build -t anthropic-eval:local-amd64 -f AnthropicEvaluation/Dockerfile .
 ```bash
 # Uses .env for ANTHROPIC_API_KEY and optional BUCKET_NAME/Redis
 docker run --pull=never -it --rm --platform linux/amd64 \
-  --env-file /Users/anaishowland/Documents/agent-hub/.env \
+  --env-file /path/to/agent-CE/.env \
   -e LOG_LEVEL=DEBUG \
-  -e GOOGLE_CLOUD_PROJECT=evaluation-deployment \
+  -e GOOGLE_CLOUD_PROJECT=your-gcp-project-id \
   -e GOOGLE_APPLICATION_CREDENTIALS=/root/.config/gcloud/application_default_credentials.json \
   -v $HOME/.config/gcloud/application_default_credentials.json:/root/.config/gcloud/application_default_credentials.json:ro \
-  -v /Users/anaishowland/Documents/agent-hub:/app -w /app \
+  -v /path/to/agent-CE:/app -w /app \
   anthropic-eval:local-amd64 \
   --jobId anthropic/local \
   --task "Check the current stock price for Apple (AAPL) on a financial news website." \
   --taskId finance1 \
-  --user anais \
+  --user your-user-id \
   --episode 0 \
   --model claude-sonnet-4-20250514 \
   --advanced_settings '{"max_steps":5,"temperature":0}'

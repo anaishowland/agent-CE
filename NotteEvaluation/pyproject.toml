@@ -5,8 +5,9 @@ version = "0.1.0"
 description = "Evaluation runner for Notte using neurosim"
 license = { file = "../LICENSE" }
 authors = [
-  { name = "Ashwin Thinnappan", email = "ashwin@paradigmshift.ai" },
-  { name = "Anais Howland", email = "anais@paradigmshift.ai" },
+  { name = "Anais Howland" },
+  { name = "Ashwin Thinnappan" },
+  { name = "Vaibhav Gupta" },
 ]
 readme = "../README.md"
 requires-python = ">=3.11"
