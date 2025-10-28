@@ -127,3 +127,5 @@ CHANGELOG.md.bak
 # Internal planning/documentation (not for public repo)
 OPEN_SOURCE_SUMMARY.md
 DEPLOYMENT.md
+# IDE settings
+.vscode/
