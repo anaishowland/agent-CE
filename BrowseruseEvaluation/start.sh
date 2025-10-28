@@ -84,7 +84,7 @@ sudo docker run \
             --taskId 'task_001' \\
             --browser 'CHROME' \\
             --episode '0' \\
-            --user 'ashwin' \\
+            --user 'example_user' \\
             --model 'gemini-2.5-flash-preview-05-20' \\
             --advanced_settings '{\"max_steps\": 10, \"use_vision\": true}'
     "

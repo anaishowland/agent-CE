@@ -64,7 +64,7 @@ def llm_config(
                 temperature=temperature,
                 vertexai=True,
                 project=os.getenv("GCP_PROJECT_ID", "your-gcp-project-id"),
-                location="us-central1",
+                location=os.getenv("GCP_REGION", "us-central1"),
                 # other params...
             )
         case 'gemini-2.5-pro-preview-06-05':
@@ -73,7 +73,7 @@ def llm_config(
                 temperature=temperature,
                 vertexai=True,
                 project=os.getenv("GCP_PROJECT_ID", "your-gcp-project-id"),
-                location="us-central1",
+                location=os.getenv("GCP_REGION", "us-central1"),
             )
         case 'gemini-2.0-flash-lite':
             llm = ChatGoogle(
@@ -81,7 +81,7 @@ def llm_config(
                 temperature=temperature,
                 vertexai=True,
                 project=os.getenv("GCP_PROJECT_ID", "your-gcp-project-id"),
-                location="us-central1",
+                location=os.getenv("GCP_REGION", "us-central1"),
             )
         case 'gemini-2.5-flash-lite':
             llm = ChatGoogle(
@@ -89,7 +89,7 @@ def llm_config(
                 temperature=temperature,
                 vertexai=True,
                 project=os.getenv("GCP_PROJECT_ID", "your-gcp-project-id"),
-                location="us-central1",
+                location=os.getenv("GCP_REGION", "us-central1"),
             )
         case 'gpt-4o':
             llm = ChatOpenAI(model='gpt-4o', max_retries=max_retries,

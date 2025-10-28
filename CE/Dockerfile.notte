@@ -1,4 +1,4 @@
-FROM us-central1-docker.pkg.dev/YOUR_PROJECT_ID/YOUR_REPO/neurosim-base:latest
+FROM YOUR_REGION-docker.pkg.dev/YOUR_PROJECT_ID/YOUR_REPO/neurosim-base:latest
 
 ARG NOTTE_BRANCH=main
 

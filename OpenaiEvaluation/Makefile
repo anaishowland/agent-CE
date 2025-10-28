@@ -22,7 +22,8 @@ publish:
 install:
 	@echo "Installing production dependencies..."
 	@echo "Installing private packages from private repository..."
-	uv pip install --upgrade --extra-index-url=https://oauth2accesstoken:$(shell gcloud auth print-access-token)@us-west1-python.pkg.dev/evaluation-deployment/neuro-deploy/simple/ -r requirements-private.txt
+	# Optional: Install from private registry
+	# uv pip install --upgrade --extra-index-url=https://oauth2accesstoken:$(shell gcloud auth print-access-token)@YOUR_REGION-python.pkg.dev/YOUR_PROJECT_ID/YOUR_REPO/simple/ -r requirements-private.txt
 	@echo "Installing public production dependencies..."
 	uv pip install -r requirements.txt
 	@echo "Production dependencies installed"
