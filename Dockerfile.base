@@ -1,0 +1,47 @@
+
+# Base Dockerfile to run all agents (refactored for smaller image)
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONPATH=/app \
+    GCS_BUCKET_NAME=your-gcs-bucket-name \
+    GOOGLE_APPLICATION_CREDENTIALS=/root/.config/gcloud/application_default_credentials.json
+
+# Install system dependencies, uv, and upgrade pip in one layer
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends xauth xvfb && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip install --no-cache-dir uv && \
+    uv pip install --upgrade --system pip
+
+# Accept build argument for GCP token
+ARG GCLOUD_ACCESS_TOKEN
+# Optional: Replace with your own Python package registry URL
+# Or remove this section if installing neurosim from PyPI
+ARG PYTHON_REPO_URL="us-west1-python.pkg.dev/YOUR_PROJECT_ID/YOUR_REPO/simple/"
+
+RUN mkdir -p /root/.config/gcloud
+
+# Install neurosim if token is provided, then install extras
+RUN if [ -n "$GCLOUD_ACCESS_TOKEN" ]; then \
+    uv pip install --upgrade --system --no-cache-dir \
+    --extra-index-url="https://oauth2accesstoken:${GCLOUD_ACCESS_TOKEN}@${PYTHON_REPO_URL}" \
+    neurosim && \
+    echo "neurosim installation completed"; \
+    else \
+    echo "Error: GCLOUD_ACCESS_TOKEN not provided, neurosim cannot be installed" && \
+    exit 1; \
+    fi && \
+    uv pip install --system --no-cache-dir neurosim[core]
+
+# Verify neurosim installation
+RUN python -c "import neurosim; print('neurosim successfully installed and importable')"
+
+# Copy entrypoint
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["bash"]

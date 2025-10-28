@@ -1,0 +1,30 @@
+FROM us-central1-docker.pkg.dev/YOUR_PROJECT_ID/YOUR_REPO/neurosim-base:latest
+
+ARG NOTTE_BRANCH=main
+
+ENV NOTTE_CONFIG_PATH=/app/NotteEvaluation/notte_config.toml
+ENV GOOGLE_CLOUD_PROJECT=YOUR_GCP_PROJECT_ID
+
+WORKDIR /app
+
+# Install git (uv should already be available from base image)
+RUN apt-get update && apt-get install -y --no-install-recommends git g++ && rm -rf /var/lib/apt/lists/*
+
+# Clone and install notte
+RUN git clone --branch ${NOTTE_BRANCH} --single-branch --depth 1 https://github.com/nottelabs/notte.git
+WORKDIR /app/notte
+RUN uv sync --dev --all-extras
+RUN uv pip install --system -e .
+WORKDIR /app
+
+# Install browser for Notte
+RUN python -m patchright install chrome
+
+# Copy NotteEvaluation application code
+COPY NotteEvaluation/ ./NotteEvaluation
+
+# neurosim should already be available from base image
+
+# Set up entrypoint
+RUN chmod +x ./NotteEvaluation/entry.sh
+ENTRYPOINT ["./NotteEvaluation/entry.sh"]

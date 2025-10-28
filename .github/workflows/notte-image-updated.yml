@@ -1,0 +1,150 @@
+name: Build Agents with Updated Notte
+
+on:
+  repository_dispatch:
+    types: [notte]
+
+env:
+  PROJECT_ID: YOUR_GCP_PROJECT_ID  # Replace with your GCP project ID
+  GAR_REGION: us-central1           # Replace with your preferred region
+  GAR_REPOSITORY: notte             # Replace with your Artifact Registry repository name
+
+jobs:
+  build-notte-agent:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Extract dispatch payload
+        id: info
+        run: |
+          # Write all the payload to the output
+          echo "branch=${{ github.event.client_payload.branch }}" >> $GITHUB_OUTPUT
+          echo "commit=${{ github.event.client_payload.commit }}" >> $GITHUB_OUTPUT
+          echo "pipeline_id=${{ github.event.client_payload.pipeline_id }}" >> $GITHUB_OUTPUT
+          echo "job_id=${{ github.event.client_payload.job_id }}" >> $GITHUB_OUTPUT
+          echo "user_id=${{ github.event.client_payload.user_id }}" >> $GITHUB_OUTPUT
+          echo "model=${{ github.event.client_payload.model }}" >> $GITHUB_OUTPUT
+          echo "advanced_settings=${{ github.event.client_payload.advanced_settings }}" >> $GITHUB_OUTPUT
+          echo "episodes=${{ github.event.client_payload.episodes }}" >> $GITHUB_OUTPUT
+
+          # Generating branch in lowercase
+          branch="${{ github.event.client_payload.branch }}"
+          BRANCH_LOWER=$(echo "$branch" | tr '[:upper:]' '[:lower:]')
+          BRANCH="$branch"
+          echo "branch_lower=$BRANCH_LOWER" >> $GITHUB_OUTPUT
+          echo "branch_upper=$BRANCH" >> $GITHUB_OUTPUT
+
+          # Generating the version in lowercase
+          LONG_COMMIT="${{ github.event.client_payload.commit }}"
+          SHORT_COMMIT="${{ github.event.client_payload['commit_sha'] }}"
+          NOTTE_VERSION="$SHORT_COMMIT"
+          if [ -z "$NOTTE_VERSION" ] || [ "$NOTTE_VERSION" = "null" ]; then
+            if [ -z "$LONG_COMMIT" ] || [ "$LONG_COMMIT" = "null" ]; then
+              NOTTE_VERSION="scheduled-$BRANCH"
+            else
+              NOTTE_VERSION="${LONG_COMMIT:0:7}"
+            fi
+            echo "Building branch $BRANCH with version $NOTTE_VERSION"
+          fi
+
+          NOTTE_VERSION=$(echo "$NOTTE_VERSION" | tr '[:upper:]' '[:lower:]')
+          echo "notte_version=$NOTTE_VERSION" >> $GITHUB_OUTPUT
+
+          # Generating the doc_id in lowercase
+          JID="${{ github.event.client_payload.job_id }}"
+          DOC_ID="neurosim-$JID"
+          DOC_ID_LOWER=$(echo "$DOC_ID" | tr '[:upper:]' '[:lower:]')
+          echo "doc_id=$DOC_ID_LOWER" >> $GITHUB_OUTPUT
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Google Cloud Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Firestore - mark building started
+        if: ${{ steps.info.outputs.job_id != '' }}
+        uses: ./.github/actions/firestore-data
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          database: agent-eval-status
+          path: agent-eval-status/${{ steps.info.outputs.doc_id }}
+          status: PACKAGING
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GAR_REGION }}-docker.pkg.dev --quiet
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push notte agent image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: CE/Dockerfile.notte
+          push: true
+          tags: |
+            ${{ env.GAR_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ steps.info.outputs.branch_lower }}:${{ steps.info.outputs.notte_version }}
+            ${{ env.GAR_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ steps.info.outputs.branch_lower }}:latest
+          build-args: |
+            NOTTE_BRANCH=${{ steps.info.outputs.branch_upper }}
+          cache-from: type=gha,scope=notte-ce
+          cache-to: type=gha,mode=max,scope=notte-ce
+
+      - name: CE POST request
+        run: |
+          # Optional: Replace with your own CE platform API endpoint
+          # curl -X POST https://your-domain.com/api/ce \
+          #   -H "Content-Type: application/json" \
+          #   -d '{
+          #     "agent_name": "notte",
+          #     "image_tag": "${{ steps.info.outputs.notte_version }}",
+          #     "docker_image": "${{ env.GAR_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ steps.info.outputs.branch }}:${{ steps.info.outputs.notte_version }}",
+          #     "branch": "${{ steps.info.outputs.branch }}",
+          #     "pipeline_id": "${{ steps.info.outputs.pipeline_id }}",
+          #     "user_id": "${{ steps.info.outputs.user_id }}",
+          #     "model": "${{ steps.info.outputs.model }}",
+          #     "advanced_settings": "${{ steps.info.outputs.advanced_settings }}",
+          #     "episodes": ${{ steps.info.outputs.episodes }},
+          #     "job_id": "${{ steps.info.outputs.job_id }}"
+          #   }'
+          echo "Skipping CE POST request (configure your own endpoint)"
+
+      - name: Summary
+        run: |
+          echo "## 🚀 Notte Agent Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Build Details" >> $GITHUB_STEP_SUMMARY
+          echo " Job ID: \`${{ steps.info.outputs.job_id }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Notte Version Tag**: \`${{ steps.info.outputs.notte_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch Image (versioned)**: \`${{ env.GAR_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ steps.info.outputs.branch }}:${{ steps.info.outputs.notte_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch Image (latest)**: \`${{ env.GAR_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ steps.info.outputs.branch }}:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Source Commit**: \`${{ steps.info.outputs.commit }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Source Ref**: \`${{ steps.info.outputs.branch }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔧 Pipeline Configuration" >> $GITHUB_STEP_SUMMARY
+          echo "- **Pipeline ID**: \`${{ steps.info.outputs.pipeline_id }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **User ID**: \`${{ steps.info.outputs.user_id }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Model**: \`${{ steps.info.outputs.model }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Advanced Settings**: \`${{ steps.info.outputs.advanced_settings }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🏷️ Generated Tags" >> $GITHUB_STEP_SUMMARY
+          echo "- **Latest**: \`${{ env.GAR_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ steps.info.outputs.branch }}:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Versioned**: \`${{ env.GAR_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ steps.info.outputs.branch }}:${{ steps.info.outputs.notte_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Status**: Successfully built notte agent for branch \`${{ steps.info.outputs.branch }}\` with version \`${{ steps.info.outputs.notte_version }}\` (commit: \`${{ steps.info.outputs.commit }}\`)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Firestore - mark build failed
+        if: ${{ failure() && steps.info.outputs.job_id != '' }}
+        uses: ./.github/actions/firestore-data
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          database: agent-eval-status
+          path: agent-eval-status/${{ steps.info.outputs.doc_id }}
+          status: FAILED

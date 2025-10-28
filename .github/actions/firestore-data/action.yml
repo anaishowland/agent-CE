@@ -1,0 +1,44 @@
+name: Firestore Write (Python)
+description: Create/merge a Firestore document
+inputs:
+  project_id:
+    description: GCP project ID
+    required: true
+  path:
+    description: Document path (e.g. agent-eval-status/neurosim-<jobid>)
+    required: true
+  database:
+    description: Firestore database ID
+    required: false
+    default: '(default)'
+  status:
+    description: Status value
+    required: false
+    default: PACKAGING
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - run: pip install --no-cache-dir google-cloud-firestore
+      shell: bash
+    - name: Write Firestore doc
+      shell: bash
+      env:
+        PROJECT_ID: ${{ inputs.project_id }}
+        DATABASE: ${{ inputs.database }}
+        DOC_PATH: ${{ inputs.path }}
+        STATUS: ${{ inputs.status }}
+      run: |
+        python - <<'PY'
+        import os
+        from google.cloud import firestore
+        db = firestore.Client(project=os.environ["PROJECT_ID"], database=os.environ["DATABASE"])
+        doc_ref = db.document(os.environ["DOC_PATH"])
+        doc_ref.set({
+            "ce_start_time": firestore.SERVER_TIMESTAMP,
+            "status": os.environ["STATUS"],
+        }, merge=True)
+        PY
+

@@ -1,0 +1,49 @@
+# NotteEvaluation/pyproject.toml
+[project]
+name = "notte-evaluation"
+version = "0.1.0"
+description = "Evaluation runner for Notte using neurosim"
+license = { file = "../LICENSE" }
+authors = [
+  { name = "Ashwin Thinnappan", email = "ashwin@paradigmshift.ai" },
+  { name = "Anais Howland", email = "anais@paradigmshift.ai" },
+]
+readme = "../README.md"
+requires-python = ">=3.11"
+dependencies = ["neurosim>=0.1.0", "notte", "playwright>=1.45.0"]
+
+[tool.uv]
+# Optional dev tools
+dev-dependencies = [
+  "ruff>=0.4.0",
+  "black>=24.3.0",
+  "pytest>=7.0.0",
+  "pytest-asyncio>=0.21.0",
+  "pytest-cov>=4.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = ["--verbose", "--tb=short", "--strict-markers", "--disable-warnings"]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["."]
+omit = ["tests/*", "*/test_*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "def __repr__",
+  "if self.debug:",
+  "if settings.DEBUG",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if 0:",
+  "if __name__ == .__main__.:",
+  "class .*\\bProtocol\\):",
+  "@(abc\\.)?abstractmethod",
+]

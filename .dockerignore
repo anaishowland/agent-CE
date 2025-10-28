@@ -1,0 +1,85 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+.venv
+venv
+env
+build
+dist
+.pytest_cache
+.mypy_cache
+.DS_Store
+.git
+.gitignore
+*.log
+**/.ipynb_checkpoints
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Development and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+docs/
+
+# Logs
+*.log
+logs/
+jlk.log
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+variable.env
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Downloaded files (if not needed in container)
+downloaded-files/
+
+# Docker files (not needed inside container)
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Local development files
+local/
+dev/
+test/
+tests/
