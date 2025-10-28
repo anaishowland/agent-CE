@@ -14,8 +14,8 @@ venv:
 
 publish:
 	@echo "Pushing Docker image to repository..."
-	sudo docker tag notte-eval:latest us-central1-docker.pkg.dev/evaluation-deployment/agents/anthropic-cua:latest
-	sudo docker push us-central1-docker.pkg.dev/evaluation-deployment/agents/anthropic-cua:latest
+	sudo docker tag notte-eval:latest YOUR_REGION-docker.pkg.dev/YOUR_PROJECT_ID/YOUR_REPO/anthropic-cua:latest
+	sudo docker push YOUR_REGION-docker.pkg.dev/YOUR_PROJECT_ID/YOUR_REPO/anthropic-cua:latest
 	@echo "Docker image pushed"
 
 # Install production dependencies

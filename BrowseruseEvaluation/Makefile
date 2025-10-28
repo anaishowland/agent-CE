@@ -5,6 +5,6 @@ build:
 
 publish:
 	@echo "Pushing Docker image to repository..."
-	sudo docker tag browseruse-eval:latest us-central1-docker.pkg.dev/evaluation-deployment/agents/browser-use:latest
-	sudo docker push us-central1-docker.pkg.dev/evaluation-deployment/agents/browser-use:latest
+	sudo docker tag browseruse-eval:latest YOUR_REGION-docker.pkg.dev/YOUR_PROJECT_ID/YOUR_REPO/browser-use:latest
+	sudo docker push YOUR_REGION-docker.pkg.dev/YOUR_PROJECT_ID/YOUR_REPO/browser-use:latest
 	@echo "Docker image pushed"
