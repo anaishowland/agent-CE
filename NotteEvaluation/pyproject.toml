@@ -8,6 +8,8 @@ authors = [
   { name = "Anais Howland" },
   { name = "Ashwin Thinnappan" },
   { name = "Vaibhav Gupta" },
+  { name = "Maithili Hebbar" },
+  { name = "Jameel Shahid Mohammed" },
 ]
 readme = "../README.md"
 requires-python = ">=3.11"

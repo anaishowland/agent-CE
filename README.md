@@ -5,7 +5,9 @@
 
 **Agent-CE** is a containerized continuous evaluation (CE) platform for web browsing agents. It provides production-ready Docker images and CI/CD pipelines for running and evaluating multiple agent frameworks including Browser Use, Notte, Anthropic Computer Use, and OpenAI Computer Use.
 
-**Created by**: Anais Howland, Ashwin Thinnappan, Vaibhav Gupta at Paradigm Shift AI
+**Developed at Paradigm Shift AI** by Anais Howland, Ashwin Thinnappan, Vaibhav Gupta, Maithili Hebbar, and Jameel Shahid Mohammed
+
+See [AUTHORS.md](AUTHORS.md) for detailed contributor information.
 
 ## Features
 
@@ -692,7 +694,7 @@ If you use this work, please cite:
 
 ```bibtex
 @software{agentce2025,
-  author = {Howland, Anais and Thinnappan, Ashwin and Gupta, Vaibhav},
+  author = {Howland, Anais and Thinnappan, Ashwin and Gupta, Vaibhav and Hebbar, Maithili and Mohammed, Jameel Shahid},
   title = {Agent-CE: Continuous Evaluation Platform for Web Agents},
   year = {2025},
   publisher = {Paradigm Shift AI},
