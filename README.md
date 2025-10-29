@@ -441,21 +441,23 @@ curl -X POST \
 
 ### Environment Variables
 
-| Variable | Required | Description | Default |
-|----------|----------|-------------|---------|
-| `GCS_BUCKET_NAME` | Yes | Google Cloud Storage bucket | - |
-| `GOOGLE_APPLICATION_CREDENTIALS` | Yes* | Path to GCP service account key | - |
-| `GCP_PROJECT_ID` | No | GCP project ID | - |
-| `FIRESTORE_DATABASE` | No | Firestore database name | `(default)` |
-| `FIRESTORE_COLLECTION` | No | Firestore collection | - |
-| `OPENAI_API_KEY` | No** | OpenAI API key | - |
-| `ANTHROPIC_API_KEY` | No** | Anthropic API key | - |
-| `GOOGLE_API_KEY` | No** | Google AI API key | - |
-| `LOG_LEVEL` | No | Logging level | `INFO` |
-| `CLOUD_RUN_TASK_INDEX` | No | Task index for Cloud Run | `0` |
+Create a `.env` file:
 
-\* Or use `gcloud auth application-default login`  
-\** Required based on which agent/model you're using
+```bash
+# Required
+GCS_BUCKET_NAME=your-gcs-bucket-name
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
+
+# Required - At least one LLM API key
+OPENAI_API_KEY=your_openai_key
+ANTHROPIC_API_KEY=your_anthropic_key
+GOOGLE_API_KEY=your_google_key
+
+# Optional
+GCP_PROJECT_ID=your-gcp-project-id
+GCP_REGION=us-central1
+LOG_LEVEL=INFO
+```
 
 ### Advanced Settings (JSON)
 
