@@ -5,9 +5,9 @@
 
 **Agent-CE** is a containerized continuous evaluation (CE) platform for web browsing agents. It provides production-ready Docker images and CI/CD pipelines for running and evaluating multiple agent frameworks including Browser Use, Notte, Anthropic Computer Use, and OpenAI Computer Use.
 
-**Developed at Paradigm Shift AI** by Anais Howland, Ashwin Thinnappan, Vaibhav Gupta, Maithili Hebbar, and Jameel Shahid Mohammed
+**Developed at Paradigm Shift AI**
 
-See [AUTHORS.md](AUTHORS.md) for detailed contributor information.
+**Contributors**: Anais Howland, Ashwin Thinnappan, Vaibhav Gupta, Maithili Hebbar (Anthropic & OpenAI CUA), Jameel Shahid Mohammed
 
 ## Features
 
@@ -36,7 +36,6 @@ See [AUTHORS.md](AUTHORS.md) for detailed contributor information.
 - [Usage Examples](#usage-examples)
 - [Development](#development)
 - [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
 - [License](#license)
 - [Citation](#citation)
 
@@ -666,23 +665,11 @@ playwright install chrome
 - (Optional) Cloud Run Admin
 - (Optional) Firestore User
 
-### Getting Help
+### Additional Resources
 
-- Check the [neurosim documentation](https://github.com/anaishowland/neurosim)
-- Review agent-specific documentation (Browser Use, Notte, etc.)
-- Open an issue on [GitHub Issues](https://github.com/anaishowland/agent-CE/issues)
-
-## Contributing
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-### Quick Start for Contributors
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test locally and with Docker
-5. Submit a pull request
+- [neurosim documentation](https://github.com/anaishowland/neurosim) - Core evaluation framework
+- Agent-specific documentation (Browser Use, Notte, etc.)
+- [ARCHITECTURE.md](ARCHITECTURE.md) - System design details
 
 ## License
 
@@ -703,3 +690,9 @@ If you use this work, please cite:
 ```
 
 **Developed at Paradigm Shift AI**
+
+This project was created to provide a production-ready continuous evaluation platform for web browsing agents.
+
+## About This Release
+
+This is a snapshot release of work developed at Paradigm Shift AI. The code is provided as-is under the MIT License for the community to use, modify, and build upon.
